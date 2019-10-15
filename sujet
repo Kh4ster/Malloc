@@ -18,8 +18,10 @@ malloc :
 alloue bloc taille n return null sinon (si taille = 0)
 free :
 if null nothing, else realease memory
-calloc -> see man and look at p9/10
-realloc -> man
+calloc :
+same as malloc just memset 0
+realloc :
+
 
 Avdanced :
 -> reduce frag using algos
@@ -49,6 +51,7 @@ Avdanced :
 
 Exo :
 -> overflow -> pour calloc
+-> page begin -> pour un poiteur donné, trouver debut de la page
 
 Structure :
 -> feuille
