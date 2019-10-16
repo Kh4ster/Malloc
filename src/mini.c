@@ -5,14 +5,12 @@
 #include <assert.h>
 #include <string.h>
 
-#include "malloc_api.h"
-#include "my_mmap.h"
-#include "hash_map.h"
-#include "small_allocator.h"
+void *malloc(size_t);
+void *realloc(void*, size_t);
 
 int main()
 {
-    char *a = my_malloc(3000);
+    char *a = malloc(3000);
     a[2500] = 5;
-    char *b = my_realloc(a, 5000);
+    char *b = realloc(a, 5000);
 }
