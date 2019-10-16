@@ -43,7 +43,10 @@ static int handle_start(struct hash_slot *s)
     s->data = s->next->data;
     struct hash_slot *next = s->next;
     s->next = s->next->next;
-    free(next);
+    next->data = NULL;
+    next->next = NULL;
+    next->size = 0;
+    my_free(next);
     return 1;
 }
 
@@ -53,14 +56,14 @@ int hash_remove(struct hash_map *set, void *value)
     struct hash_slot *s = get_slot(set, value);
     if (s->data == NULL)
         return 0;
-    if (s->next == NULL && s->data = value)
+    if (s->next == NULL && s->data == value)
     {
-        //faudrait free value
         s->data = NULL;
+        s->size = 0;
         return 1;
     }
     struct hash_slot *f = s;
-    while (s->data, value)
+    while (s->data != value)
     {
         f = s;
         s = s->next;
@@ -70,14 +73,17 @@ int hash_remove(struct hash_map *set, void *value)
     if (s == f)
         return handle_start(s);
     f->next = s->next;
-    free(s);
+    s->size = 0;
+    s->next = NULL;
+    s->data = NULL;
+    my_free(s);
     return 1;
 }
 
-size_t hash_find(const struct hash_map *set, void *value)
+size_t hash_find(struct hash_map *set, void *value)
 {
-    size_t v = hash(value, set->size);
-    struct hash_slot *s = &(set->slots[v]);
+    assert(value != NULL);
+    struct hash_slot *s = get_slot(set, value);
     if (s->data == NULL)
         return 0;
     while (s->data != value)
@@ -100,14 +106,4 @@ void hash_init(struct hash_map *s, size_t size)
         s->slots[i].next = NULL;
         s->slots[i].size = 0;
     }
-    return s;
-}
-
-void hash_free(struct hash_map *set)
-{
-    if (set == NULL)
-        return;
-
-    my_free(set->slots);
-    my_free(set);
 }

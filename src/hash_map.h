@@ -22,10 +22,9 @@ struct hash_map
 
 size_t basic_hash_function(long long key, size_t table_size);
 void hash_init(struct hash_map *s, size_t size);
-void hash_free(struct hash_map *set);
 void hash_insert(struct hash_map *set, void *value, size_t size);
 int hash_remove(struct hash_map *set, void *value);
-size_t hash_find(const struct hash_map *set, void *value);
+size_t hash_find(struct hash_map *set, void *value);
 void hash_dump(const struct hash_map *set);
 
 #endif /* !HASH_SET_H */
