@@ -6,5 +6,10 @@ all:
 	$(CC) $(CFLAGS) $(CPPFLAGS) my_mmap.c small_allocator.c util.c -c
 
 check:
-	gcc -lcriterion -Werror -pedantic -Wextra -Wall -std=c99 ../test/test_util.c util.c -lm -o test
-	./test
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_util.c util.c -lm -o test1
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_small_allocator.c util.c my_mmap.c small_allocator.c -lm -o test2
+	./test1
+	./test2
+
+mini:
+	$(CC) $(CPPFLAGS) my_mmap.c small_allocator.c util.c mini.c -lm

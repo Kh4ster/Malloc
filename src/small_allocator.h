@@ -5,7 +5,9 @@
 
 #define NB_GROUP_PAGE 7
 
-//Page découpé en bloc de soit 16 32 64 128 256 512 1024
+extern struct small_allocator small_allocator;
+
+//Page découpé en bloc de soit 16 32 64 128 256 512 1024 bytes
 struct small_allocator
 {
     //tableau de pointeur vers les dlist de page découpé en free-list
@@ -20,6 +22,7 @@ struct block
     void *prev;
     //la partie donné dans laquelle on aura notre freelist
     void *beg_freelist;
+    //taile des sous block de la free_list en bytes
     size_t sub_block_size;
 };
 
@@ -28,6 +31,17 @@ struct freelist_item
     void *next;
     void *prev;
 };
+
+void *insert_small_block(size_t size);
+void init_free_list(struct block *block,
+    struct freelist_item *item,
+    size_t block_size);
+
+void init_block(struct small_allocator *small_allocator,
+    struct block *block,
+    size_t block_size);
+
+void init_small_allocator(void);
 
 
 #endif /* !SMALL_ALLOCATOR_H */

@@ -1,6 +1,4 @@
 A ALLER LIRE :
-man memap
-man sysconf
 stdint.h
 pthead.h
 mman.h
