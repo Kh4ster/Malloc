@@ -23,9 +23,9 @@ realloc :
 
 
 Avdanced :
--> reduce frag using algos
--> realloc extend current memory if can rather than new
--> realloc works even with alot of calls
+-> reduce frag using algos OK
+-> realloc extend current memory if can rather than new 
+-> realloc works even with alot of calls OK
 -> speed (algo + thread) -> speed.py
 -> limit memap calls -> memorfootpint -> see page 11
 -> compiling projet with own malloc
@@ -50,7 +50,6 @@ Avdanced :
 
 Exo :
 -> overflow -> pour calloc
--> page begin -> pour un poiteur donné, trouver debut de la page
 
 Structure :
 -> feuille

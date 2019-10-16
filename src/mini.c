@@ -8,21 +8,5 @@
 
 int main()
 {
-    char *str[300] = {0};
-    str[0] = my_malloc(sizeof(char) * 16);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i] = my_malloc(sizeof(char) * 16);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i][0] = '5';
-
-    for(size_t i = 1; i < 300; ++i)
-        my_free(str[i]);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i] = my_malloc(sizeof(char) * 16);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i][0] = '5';
+    printf("%lu, %lu\n", sizeof(size_t), sizeof(long long));
 }

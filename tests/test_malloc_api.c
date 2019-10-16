@@ -122,7 +122,7 @@ Test(free, fill_page_then_free_it)
 {
     cr_assert_null(g_small_allocator.heads[0]);
 
-    char *str[300] = {0};
+    char *str[300];
     str[0] = my_malloc(sizeof(char) * 16);
 
     cr_assert_not_null(g_small_allocator.heads[0]);
@@ -140,7 +140,7 @@ Test(free, fill_page_then_free_it)
     for(size_t i = 1; i < 300; ++i)
         str[i][0] = '5';
 
-    /*for(size_t i = 1; i < 300; ++i)
+    for(size_t i = 1; i < 300; ++i)
         my_free(str[i]);
 
     cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
@@ -149,5 +149,7 @@ Test(free, fill_page_then_free_it)
         str[i] = my_malloc(sizeof(char) * 16);
 
     for(size_t i = 1; i < 300; ++i)
-        str[i][0] = '5';*/
+        str[i][0] = '5';
+
+    cr_assert_null(g_small_allocator.heads[0]->beg_freelist);
 }
