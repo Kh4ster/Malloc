@@ -4,10 +4,12 @@
 
 void *malloc(size_t size)
 {
+    if (small_allocator.heads == NULL)
+        init_small_allocator();
     if (size > 0)
     {
-        if (size <= sysconf(_SC_PAGESIZE) / 4)
-            return insert_small_block(size);
+        if (size <= small_allocator.max_sub_block_size)
+            return allocate_small_block(size);
         else
             return my_mmap_size(size);
     }

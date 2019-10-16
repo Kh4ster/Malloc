@@ -12,6 +12,7 @@ struct small_allocator
 {
     //tableau de pointeur vers les dlist de page découpé en free-list
     struct block *heads[NB_GROUP_PAGE];
+    long max_sub_block_size;
 };
 
 //Au début de ma page pour savoir où commence ma freelist et où sont les atr pag
@@ -32,7 +33,7 @@ struct freelist_item
     void *prev;
 };
 
-void *insert_small_block(size_t size);
+void *allocate_small_block(size_t size);
 void init_free_list(struct block *block,
     struct freelist_item *item,
     size_t block_size);

@@ -16,6 +16,7 @@ malloc :
 alloue bloc taille n return null sinon (si taille = 0)
 free :
 if null nothing, else realease memory
+-> protéger contre garbage data en metatnt des 0 avant et après
 calloc :
 same as malloc just memset 0
 realloc :

@@ -11,11 +11,14 @@
 
 struct small_allocator small_allocator;
 
-void *insert_small_block(size_t size)
+void *allocate_small_block(size_t size)
 {
     struct block *head = small_allocator.heads[my_log(size)];
-    head++;
-    return NULL;
+    struct freelist_item *first = head->beg_freelist; 
+    struct freelist_item *next = first->next;
+    head->beg_freelist = next;
+    next->prev = head->beg_freelist;
+    return first;
 }
 
 void init_free_list(struct block *block,
@@ -43,7 +46,7 @@ void init_free_list(struct block *block,
         item->next = NULL;
 
     struct freelist_item *current = item->next;
-    while (current_size < MAX_SIZE) //<= ?
+    while (current_size < MAX_SIZE)
     {
         current->prev = current - size_move;
         current->next = current + size_move;
@@ -66,6 +69,7 @@ void init_block(struct small_allocator *small_allocator,
 
 void init_small_allocator(void)
 {
+    small_allocator.max_sub_block_size = sysconf(_SC_PAGESIZE) / 4;
     size_t size = 16;
     for (size_t i = 0; i < NB_GROUP_PAGE; i++)
     {
