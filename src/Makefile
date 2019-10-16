@@ -15,4 +15,4 @@ check:
 	rm test*
 
 mini:
-	$(CC) $(CPPFLAGS) my_mmap.c small_allocator.c util.c mini.c malloc_api.c -lm -g
+	$(CC) $(CPPFLAGS) *.c -lm -g

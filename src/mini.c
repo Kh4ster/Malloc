@@ -8,9 +8,21 @@
 
 int main()
 {
-    static const int prot = PROT_READ | PROT_WRITE;
-    void *small = my_mmap();
-    void *medium = mmap(NULL, 5000, prot, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    void *big = mmap(NULL, 9000, prot, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    printf("%lld %lld %lld\n", (long long)small % 50, (long long)medium % 50, (long long)big % 50);
+    char *str[300] = {0};
+    str[0] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i][0] = '5';
+
+    for(size_t i = 1; i < 300; ++i)
+        my_free(str[i]);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i][0] = '5';
 }

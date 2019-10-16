@@ -1,7 +1,10 @@
+#include <stddef.h>
+#include <signal.h>
 #include <criterion/criterion.h>
 #include <string.h>
 
 #include "../src/malloc_api.h"
+#include "../src/small_allocator.h"
 
 Test(malloc, basic_small_single_allocation)
 {
@@ -91,5 +94,60 @@ Test(malloc, error_malloc_null)
 
 Test(free, null_ptr)
 {
-    free(NULL);
+    my_free(NULL);
+}
+
+Test(free, basic_alloc_free)
+{
+    char *str = my_malloc(sizeof(char) * 20);
+    strcpy(str, "Hello world !");
+    cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    my_free(str);
+    str = my_malloc(sizeof(char) * 20);
+    strcpy(str, "Hello world !");
+    cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    my_free(str);
+}
+
+Test(free, big_block, .signal = SIGSEGV)
+{
+    int *ptr = my_malloc(5000);
+    *ptr = 5;
+    cr_assert_not_null(hash_find(&g_small_allocator.map, ptr));
+    my_free(ptr);
+    *ptr = 5;
+}
+
+Test(free, fill_page_then_free_it)
+{
+    cr_assert_null(g_small_allocator.heads[0]);
+
+    char *str[300] = {0};
+    str[0] = my_malloc(sizeof(char) * 16);
+
+    cr_assert_not_null(g_small_allocator.heads[0]);
+    cr_assert_null(g_small_allocator.heads[0]->next);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < 7; ++i)
+        cr_assert_null(g_small_allocator.heads[i]);
+
+    cr_assert_not_null(g_small_allocator.heads[0]->next);
+    cr_assert_null(g_small_allocator.heads[0]->beg_freelist);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i][0] = '5';
+
+    /*for(size_t i = 1; i < 300; ++i)
+        my_free(str[i]);
+
+    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i][0] = '5';*/
 }

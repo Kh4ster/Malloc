@@ -59,7 +59,8 @@ static void free_small_block(void *ptr)
         struct freelist_item *old_next = top->next;
         current->next = old_next;
         top->next = current;
-        old_next->prev = current;
+        if (old_next != NULL)
+            old_next->prev = current;
     }
 }
 
