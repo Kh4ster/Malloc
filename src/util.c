@@ -8,7 +8,7 @@
 int my_log(int n)
 {
     assert(n >= 0);
-    //Car notre formule donne des negatifs sinon
+    //Because our formula would return negative number
     if (n <= 16)
         return 0;
     double d = n;

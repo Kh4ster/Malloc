@@ -11,6 +11,11 @@ static inline void memory_end(void)
     errx(1, "No memory left");
 }
 
+static inline void error_munmap(void)
+{
+    errx(1, "Error munmap");
+}
+
 void* my_mmap(void)
 {
     static const int prot = PROT_READ | PROT_WRITE;
@@ -27,4 +32,10 @@ void* my_mmap_size(size_t size)
     if (ptr == MAP_FAILED)
         memory_end();
     return ptr;
+}
+
+void my_munmap(void *ptr, size_t size)
+{
+    if (munmap(ptr, size) == -1)
+        error_munmap();
 }

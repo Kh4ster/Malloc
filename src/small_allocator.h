@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#include "hash_map.h"
+
 #define NB_GROUP_PAGE 7
 
 extern struct small_allocator g_small_allocator;
@@ -14,6 +16,7 @@ struct small_allocator
     struct block *heads[NB_GROUP_PAGE];
     size_t max_sub_block_size;
     size_t size_item_per_block[7];
+    struct hash_map map;
 };
 
 //Au début de ma page pour savoir où commence ma freelist et où sont les atr pag

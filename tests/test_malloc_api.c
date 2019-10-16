@@ -88,3 +88,8 @@ Test(malloc, error_malloc_null)
     int *a = my_malloc(0);
     cr_assert_null(a);
 }
+
+Test(free, null_ptr)
+{
+    free(NULL);
+}
