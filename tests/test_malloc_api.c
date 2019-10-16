@@ -171,8 +171,47 @@ Test(calloc, basic_allocation)
     for (size_t i  = 0; i < 50; ++i)
         cr_assert_eq(ptr[i], i, "not equal to value");
     my_free(ptr);
+    ptr = my_calloc(50, sizeof(int));
     for (size_t i  = 0; i < 50; ++i)
         ptr[i] = i;
     for (size_t i  = 0; i < 50; ++i)
         cr_assert_eq(ptr[i], i, "not equal to value");
+}
+
+Test(realloc, null)
+{
+    int *ptr = my_realloc(NULL, 50 * sizeof(int));
+    cr_assert_not_null(ptr);
+    for (size_t i  = 0; i < 50; ++i)
+        ptr[i] = i;
+    for (size_t i  = 0; i < 50; ++i)
+        cr_assert_eq(ptr[i], i, "not equal to value");
+    my_free(ptr);
+    ptr = my_realloc(NULL, 50 * sizeof(int));
+    for (size_t i  = 0; i < 50; ++i)
+        ptr[i] = i;
+    for (size_t i  = 0; i < 50; ++i)
+        cr_assert_eq(ptr[i], i, "not equal to value");
+}
+
+Test(realloc, stay_in_table)
+{
+    char *str = my_malloc(sizeof(char) * 20);
+    strcpy(str, "Hello world !");
+    cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    str = my_realloc(str, 25);
+    cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    strcpy(str, "Hello world ! More more");
+    cr_assert_eq(strcmp(str, "Hello world ! More more"), 0, "invalid string value");
+}
+
+Test(realloc, change_table)
+{
+    char *str = my_malloc(sizeof(char) * 20);
+    strcpy(str, "Hello world !");
+    cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    str = my_realloc(str, 50);
+    cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    strcpy(str, "Hello world ! More more more more more more");
+    cr_assert_eq(strcmp(str, "Hello world ! More more more more more more"), 0, "invalid string value");
 }

@@ -39,3 +39,11 @@ void my_munmap(void *ptr, size_t size)
     if (munmap(ptr, size) == -1)
         error_munmap();
 }
+
+void *my_mremap(void *ptr, size_t old_size, size_t new_size)
+{
+    void *new_ptr = mremap(ptr, old_size, new_size, MREMAP_MAYMOVE);
+    if (new_ptr == MAP_FAILED)
+        memory_end();
+    return new_ptr;
+}

@@ -1,5 +1,6 @@
 -> garbage data devant et derrière noeud pour protéger contre corruption
 -> swaper page quand une pleine
+-> realloc smaller
 
 Question :
 

@@ -26,5 +26,6 @@ void hash_insert(struct hash_map *set, void *value, size_t size);
 int hash_remove(struct hash_map *set, void *value);
 size_t hash_find(struct hash_map *set, void *value);
 void hash_dump(const struct hash_map *set);
+struct hash_slot* hash_get_slot(struct hash_map *set, void *value);
 
 #endif /* !HASH_SET_H */

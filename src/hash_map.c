@@ -96,6 +96,22 @@ size_t hash_find(struct hash_map *set, void *value)
     return s->size;
 }
 
+struct hash_slot* hash_get_slot(struct hash_map *set, void *value)
+{
+    assert(value != NULL);
+    struct hash_slot *s = get_slot(set, value);
+    if (s->data == NULL)
+        return NULL;
+    while (s->data != value)
+    {
+        s = s->next;
+        if (s == NULL)
+            return NULL;
+    }
+
+    return s;
+}
+
 void hash_init(struct hash_map *s, size_t size)
 {
     assert(size > 0);

@@ -87,4 +87,55 @@ void *my_calloc(size_t number, size_t size)
     return ptr;
 }
 
-void *realloc(void *ptr, size_t size);
+void *realloc_big_block(struct hash_map *map,
+                        void *ptr,
+                        struct hash_slot *slot,
+                        size_t new_size
+)
+{
+    const int page_size = g_small_allocator.page_size;
+    void *new_ptr;
+    if (new_size % page_size > slot->size % page_size)
+    {
+        new_ptr = my_mremap(ptr, slot->size, new_size);
+        if (new_ptr == ptr)
+            slot->size = new_size;
+        else
+        {
+            my_free(ptr);
+            hash_remove(map, ptr);
+            hash_insert(map, new_ptr, new_size);
+        }
+        return new_ptr;
+    }
+    else
+    {
+        slot->size = new_size;
+        return ptr;
+    }
+}
+
+static void* realloc_small_block(void *ptr, size_t new_size)
+{
+    struct block *head = get_page_address(ptr);
+    if (head->sub_block_size >= new_size)
+        return ptr;
+    void *new_ptr = my_malloc(new_size);
+    memcpy(new_ptr, ptr, head->sub_block_size);
+    my_free(ptr);
+    return new_ptr;
+}
+
+void *my_realloc(void *ptr, size_t size)
+{
+    if (ptr == NULL)
+        return my_malloc(size);
+    struct hash_slot *slot = hash_get_slot(&(g_small_allocator.map), ptr);
+    if (slot == NULL)
+        return realloc_small_block(ptr, size);
+    else
+        return realloc_big_block(&(g_small_allocator.map),
+                                    ptr,
+                                    slot,
+                                    size);
+}
