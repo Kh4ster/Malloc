@@ -5,12 +5,12 @@
 
 void *my_malloc(size_t size)
 {
-    if (small_allocator.heads[0] == NULL)
+    if (g_small_allocator.max_sub_block_size == 0)
         init_small_allocator();
     if (size > 0)
     {
-        if (size <= small_allocator.max_sub_block_size)
-            return allocate_small_block(size);
+        if (size <= g_small_allocator.max_sub_block_size)
+            return allocate_item(&g_small_allocator, size);
         else
             return my_mmap_size(size);
     }

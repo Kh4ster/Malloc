@@ -9,19 +9,9 @@
 #define NB_GROUP_PAGE 7
 #define MAX_SIZE sysconf(_SC_PAGESIZE)
 
-struct small_allocator small_allocator;
+struct small_allocator g_small_allocator = {0};
 
-void *allocate_small_block(size_t size)
-{
-    struct block *head = small_allocator.heads[my_log(size)];
-    struct freelist_item *first = head->beg_freelist; 
-    struct freelist_item *next = first->next;
-    head->beg_freelist = next;
-    next->prev = head->beg_freelist;
-    return first;
-}
-
-void init_free_list(struct block *block,
+static void init_free_list(struct block *block,
     struct freelist_item *item,
     size_t block_size
 )
@@ -53,28 +43,82 @@ void init_free_list(struct block *block,
         current = current->next;
         current_size += block_size;
     }
+    current->next = NULL;
 }
 
-void init_block(struct small_allocator *small_allocator,
-    struct block *block,
-    size_t block_size
+/*
+** Soit on veut allouer une nouvelle page à partir d'une liste existante
+** Dans ce cas on connait déjà la taille des subblock
+** Sinon c'est une première dans ce cas on nous passe la taille calculé
+*/
+static struct block* init_block(size_t size_sub_block,
+    struct block **to_allocate
 )
 {
-    block->sub_block_size = block_size;
-    block->prev = small_allocator;
+    *to_allocate = my_mmap();
+    struct block *block = *to_allocate;
+    block->sub_block_size = size_sub_block;
     block->next = NULL;
     block->beg_freelist = block + 1;
     init_free_list(block, block->beg_freelist, block->sub_block_size);
+    return block;
+}
+
+struct block* init_block_start(struct small_allocator *small_allocator,
+    size_t size,
+    struct block **to_allocate
+)
+{
+    size_t current_size = small_allocator->size_item_per_block[my_log(size)];
+    struct block *block = init_block(current_size, to_allocate);
+    block->prev = small_allocator;
+    return block;
+}
+
+static struct block* allocate_new_block(struct block *prev)
+{
+    struct block *block = init_block(prev->sub_block_size,
+        (struct block**)(&prev->next));
+    block->prev = prev;
+    prev->next = block;
+    return block;
+}
+
+void *allocate_item(struct small_allocator *small_allocator, size_t size)
+{
+    struct block *head = small_allocator->heads[my_log(size)];
+    if (head == NULL) //first malloc call with this size
+    {
+        head = init_block_start(small_allocator,
+                    size,
+                    &(small_allocator->heads[my_log(size)]));
+    }
+    struct block *last;
+    while (head != NULL && head->beg_freelist == NULL)
+    {
+        last = head;
+        struct block *next = head->next;
+        head = next;
+    }
+
+    if (head == NULL)
+        head = allocate_new_block(last);
+
+    struct freelist_item *first = head->beg_freelist; 
+    struct freelist_item *next = first->next;
+    head->beg_freelist = next;
+    if (next != NULL)
+        next->prev = head->beg_freelist;
+    return first;
 }
 
 void init_small_allocator(void)
 {
-    small_allocator.max_sub_block_size = sysconf(_SC_PAGESIZE) / 4;
+    g_small_allocator.max_sub_block_size = sysconf(_SC_PAGESIZE) / 4;
     size_t size = 16;
-    for (size_t i = 0; i < NB_GROUP_PAGE; i++)
+    for (size_t i = 0; i < 7; i++)
     {
-        small_allocator.heads[i] = my_mmap();
-        init_block(&small_allocator, small_allocator.heads[i], size);
+        g_small_allocator.size_item_per_block[i] = size;
         size <<= 1;
     }
 }
