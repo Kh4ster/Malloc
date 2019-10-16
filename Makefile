@@ -5,7 +5,7 @@ LDFLAGS = -shared
 VPATH = src
 
 TARGET_LIB = libmalloc.so
-OBJS = malloc.o
+OBJS = malloc.o my_mmap.o small_allocator.o util.o hash_map.o malloc_api.o
 CALL_LIB = libtracemalloc.so
 CALL_OBJS = call_trace.o
 
