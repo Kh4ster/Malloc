@@ -4,3 +4,4 @@
 Question :
 
 Makefile sera réécrit ? Besoin de -lm
+si calloc overflow, return null ou error ?

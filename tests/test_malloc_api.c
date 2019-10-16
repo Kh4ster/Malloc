@@ -153,3 +153,26 @@ Test(free, fill_page_then_free_it)
 
     cr_assert_null(g_small_allocator.heads[0]->beg_freelist);
 }
+
+Test(calloc, overflow)
+{
+    void *ptr = my_calloc(12345678904, 12345678904);
+    cr_assert_null(ptr, "not null after overflow");
+}
+
+Test(calloc, basic_allocation)
+{
+    int *ptr = my_calloc(50, sizeof(int));
+    cr_assert_not_null(ptr);
+    for (size_t i  = 0; i < 50; ++i)
+        cr_assert_eq(ptr[i], 0, "not equal to 0");
+    for (size_t i  = 0; i < 50; ++i)
+        ptr[i] = i;
+    for (size_t i  = 0; i < 50; ++i)
+        cr_assert_eq(ptr[i], i, "not equal to value");
+    my_free(ptr);
+    for (size_t i  = 0; i < 50; ++i)
+        ptr[i] = i;
+    for (size_t i  = 0; i < 50; ++i)
+        cr_assert_eq(ptr[i], i, "not equal to value");
+}

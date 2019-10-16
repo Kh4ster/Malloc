@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdint.h>
 
 #include "small_allocator.h"
 #include "my_mmap.h"
@@ -75,5 +77,14 @@ void my_free(void *ptr)
         free_big_block(&(g_small_allocator.map), ptr, size);
 }
 
-void *calloc(size_t number, size_t size);
+void *my_calloc(size_t number, size_t size)
+{
+    size_t a;
+    if (__builtin_umull_overflow(number, size, &a))
+        return NULL;
+    void *ptr = my_malloc(number * size);
+    memset(ptr, 0, number * size);
+    return ptr;
+}
+
 void *realloc(void *ptr, size_t size);
