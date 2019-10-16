@@ -6,10 +6,13 @@ all:
 	$(CC) $(CFLAGS) $(CPPFLAGS) my_mmap.c small_allocator.c util.c -c
 
 check:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_util.c util.c -lm -o test1
-	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_small_allocator.c util.c my_mmap.c small_allocator.c malloc_api.c -lm -o test2
-	./test1
-	./test2
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_util.c util.c -lm -o test_util
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_small_allocator.c util.c my_mmap.c small_allocator.c -lm -o test_allocator
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_malloc_api.c util.c my_mmap.c small_allocator.c malloc_api.c -lm -o test_api
+	./test_util
+	./test_allocator
+	./test_api
+	rm test*
 
 mini:
 	$(CC) $(CPPFLAGS) my_mmap.c small_allocator.c util.c mini.c malloc_api.c -lm -g

@@ -94,6 +94,7 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
                     &(small_allocator->heads[my_log(size)]));
     }
     struct block *last;
+    //go to first none-full page or end to allocate a new one
     while (head != NULL && head->beg_freelist == NULL)
     {
         last = head;
@@ -101,7 +102,7 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
         head = next;
     }
 
-    if (head == NULL)
+    if (head == NULL) //page full
         head = allocate_new_block(last);
 
     struct freelist_item *first = head->beg_freelist; 
