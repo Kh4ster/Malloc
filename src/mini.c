@@ -1,8 +1,11 @@
 #include <unistd.h>
+#include <stdio.h>
 
-#include "small_allocator.h"
+#include "malloc_api.h"
 
 int main()
 {
-    init_small_allocator();
+    int *a = malloc(sizeof(int));
+    *a = 5;
+    printf("%d\n", *a);
 }

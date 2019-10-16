@@ -1,10 +1,11 @@
 #include <unistd.h>
+#include <stdio.h>
 #include "small_allocator.h"
 #include "my_mmap.h"
 
-void *malloc(size_t size)
+void *my_malloc(size_t size)
 {
-    if (small_allocator.heads == NULL)
+    if (small_allocator.heads[0] == NULL)
         init_small_allocator();
     if (size > 0)
     {
