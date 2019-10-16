@@ -5,14 +5,25 @@
 #include "malloc_api.h"
 #include "my_mmap.h"
 
+//Justr trying to reduce same value appeareace
 static size_t hash(long long key, size_t table_size)
 {
-    return key % table_size;
+    static const int imp[5] = { 1, 3, 5, 7, 9 };
+    size_t r = key % table_size;
+    if (r <= 64)
+    {
+        size_t new_r = ((key ^ 52) + imp[key % 5]) % table_size;
+        if (new_r >= 23 && new_r <= 64)
+            return (((~new_r ^ 0xfaff0c45d))- imp[r % 5]) % table_size;
+        return new_r;
+    }
+    return r;
 }
 
 static struct hash_slot* get_slot(struct hash_map *set, void *value)
 {
     size_t v = hash((long long)value, set->size);
+    printf("%ld\n", v);
     struct hash_slot *s = &(set->slots[v]);
     return s;
 }

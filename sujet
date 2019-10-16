@@ -24,7 +24,7 @@ realloc :
 
 Avdanced :
 -> reduce frag using algos OK
--> realloc extend current memory if can rather than new 
+-> realloc extend current memory if can rather than new OK
 -> realloc works even with alot of calls OK
 -> speed (algo + thread) -> speed.py
 -> limit memap calls -> memorfootpint -> see page 11
