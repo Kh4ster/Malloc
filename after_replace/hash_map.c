@@ -23,7 +23,6 @@ static size_t hash(long long key, size_t table_size)
 static struct hash_slot* get_slot(struct hash_map *set, void *value)
 {
     size_t v = hash((long long)value, set->size);
-    printf("%ld\n", v);
     struct hash_slot *s = &(set->slots[v]);
     return s;
 }
