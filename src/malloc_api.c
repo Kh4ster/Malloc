@@ -95,7 +95,7 @@ void *realloc_big_block(struct hash_map *map,
 {
     const int page_size = g_small_allocator.page_size;
     void *new_ptr;
-    if (new_size % page_size > slot->size % page_size)
+    if (new_size / page_size > slot->size / page_size)
     {
         new_ptr = my_mremap(ptr, slot->size, new_size);
         if (new_ptr == ptr)

@@ -118,7 +118,7 @@ void init_small_allocator(void)
 {
     hash_init(&(g_small_allocator.map), NB_SLOTS);
     g_small_allocator.max_sub_block_size = sysconf(_SC_PAGESIZE) / 4;
-    g_small_allocator.max_sub_block_size = sysconf(_SC_PAGESIZE);
+    g_small_allocator.page_size = sysconf(_SC_PAGESIZE);
     size_t size = 16;
     for (size_t i = 0; i < 7; i++)
     {

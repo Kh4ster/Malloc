@@ -5,6 +5,7 @@
 
 #include "../src/malloc_api.h"
 #include "../src/small_allocator.h"
+#include "../src/hash_map.h"
 
 Test(malloc, basic_small_single_allocation)
 {
@@ -211,7 +212,37 @@ Test(realloc, change_table)
     strcpy(str, "Hello world !");
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     str = my_realloc(str, 50);
+    struct freelist_item *first = g_small_allocator.heads[1]->beg_freelist;
+    //suppose to free first so first free block should be right after
+    cr_assert_eq(first, g_small_allocator.heads[1] + 1);
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     strcpy(str, "Hello world ! More more more more more more");
     cr_assert_eq(strcmp(str, "Hello world ! More more more more more more"), 0, "invalid string value");
+}
+
+Test(realloc, big_same_addr)
+{
+    char *a = my_malloc(3000);
+    *a = 5;
+    char *b = my_realloc(a, 3500);
+    b[3250] = 5;
+    cr_assert_eq(a, b);
+    cr_assert_eq(*b, 5);
+    struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
+    cr_assert_eq(slot->size, 3500);
+}
+
+Test(realloc, big_diff_addr)
+{
+    char *a = my_malloc(3000);
+    a[2500] = 5;
+    char *b = my_realloc(a, 5000);
+    cr_assert_(a != b, "a should not be equal to b");
+    cr_assert_eq(b[2500], 5);
+    b[3500] = 3;
+    struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
+    cr_assert_null(slot);
+    slot = hash_get_slot(&g_small_allocator.map, b);
+    cr_assert_not_null(slot);
+    cr_assert_eq(slot->size, 5000);
 }

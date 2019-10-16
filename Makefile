@@ -1,6 +1,6 @@
 CC = gcc
 CPPFLAGS = -D_DEFAULT_SOURCE
-CFLAGS = -Wall -Wextra -Werror -std=c99 -fPIC -fvisibility=hidden -fno-builtin
+CFLAGS = -Wall -Wextra -Werror -std=c99 -fPIC -fno-builtin
 LDFLAGS = -shared
 VPATH = src
 
@@ -11,7 +11,7 @@ CALL_OBJS = call_trace.o
 
 all: $(TARGET_LIB)
 
-$(TARGET_LIB): CFLAGS += -pedantic
+$(TARGET_LIB): CFLAGS += -pedantic -fvisibility=hidden
 $(TARGET_LIB): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 

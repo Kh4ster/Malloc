@@ -7,11 +7,12 @@
 
 #include "malloc_api.h"
 #include "my_mmap.h"
+#include "hash_map.h"
+#include "small_allocator.h"
 
 int main()
 {
-    char *str = my_malloc(sizeof(char) * 20);
-    strcpy(str, "Hello world !");
-    str = my_realloc(str, 25);
-    strcpy(str, "Hello world ! More more");
+    char *a = my_malloc(3000);
+    a[2500] = 5;
+    char *b = my_realloc(a, 5000);
 }

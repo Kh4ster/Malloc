@@ -15,7 +15,7 @@ struct small_allocator
     //tableau de pointeur vers les dlist de page découpé en free-list
     struct block *heads[NB_GROUP_PAGE];
     size_t max_sub_block_size;
-    const int page_size;
+    int page_size;
     size_t size_item_per_block[7];
     struct hash_map map;
 };
