@@ -11,6 +11,8 @@ CALL_OBJS = call_trace.o
 
 all: $(TARGET_LIB)
 
+check:
+
 $(TARGET_LIB): CFLAGS += -pedantic -fvisibility=hidden
 $(TARGET_LIB): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
