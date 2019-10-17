@@ -31,10 +31,14 @@ void *action(void *args)
             assert(i + j == arr[i][j]);
     }
 
-    for (size_t i = 0; i < 100; i++)
+    for (size_t i = 99; i >= 0; i--)
+    {
+        if (i == 48)
+            printf("a");
         my_free(arr[i]);
+    }
     my_free(arr);
-
+/*
     arr = my_malloc(sizeof(int*) * 100);
     for (size_t i = 0; i < 100; i++)
         arr[i] = my_malloc(sizeof(int) * (i + 1));
@@ -53,7 +57,7 @@ void *action(void *args)
     for (size_t i = 0; i < 100; i++)
         my_free(arr[i]);
     my_free(arr);
-
+*/
     return NULL;
 }
 

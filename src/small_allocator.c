@@ -35,7 +35,10 @@ static void init_free_list(struct block *block,
     if (current_size < MAX_SIZE)
         item->next = item + size_move;
     else
+    {
         item->next = NULL;
+        return;
+    }
 
     struct freelist_item *current = item->next;
     while (current_size < MAX_SIZE)
@@ -45,6 +48,7 @@ static void init_free_list(struct block *block,
         current = current->next;
         current_size += block_size;
     }
+    current = current - size_move;
     current->next = NULL;
 }
 
