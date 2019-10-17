@@ -20,6 +20,8 @@ struct small_allocator
     size_t size_item_per_block[7];
     struct hash_map map;
     pthread_mutex_t mutex;
+    //only used for malloc recursive call to malloc in the hashmap
+    pthread_t current;
 };
 
 //Au début de ma page pour savoir où commence ma freelist et où sont les atr pag

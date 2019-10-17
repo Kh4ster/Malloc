@@ -5,7 +5,7 @@
 
 typedef size_t (*hash_function)(void *key, size_t table_size);
 
-#define NB_SLOTS 256
+#define NB_SLOTS 2048
 
 struct hash_slot
 {

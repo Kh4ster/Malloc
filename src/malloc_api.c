@@ -11,11 +11,11 @@ static void* allocate_big_block(struct hash_map *map, size_t size)
 {
     void *ptr = my_mmap_size(size);
 
-    pthread_mutex_lock(&g_small_allocator.mutex);
+    my_lock();
 
     hash_insert(map, ptr, size);
 
-    pthread_mutex_unlock(&g_small_allocator.mutex);
+    my_unlock();
 
     return ptr;
 }
@@ -77,7 +77,7 @@ void my_free(void *ptr)
     if (ptr == NULL)
         return;
 
-    pthread_mutex_lock(&g_small_allocator.mutex);
+    my_lock();
 
     size_t size = hash_find(&(g_small_allocator.map), ptr);
     if (size == 0)
@@ -85,7 +85,7 @@ void my_free(void *ptr)
     else
         free_big_block(&(g_small_allocator.map), ptr, size);
 
-    pthread_mutex_unlock(&g_small_allocator.mutex);
+    my_unlock();
 }
 
 /*
@@ -118,22 +118,22 @@ void *realloc_big_block(struct hash_map *map,
         memcpy(new_ptr, ptr, slot->size);
         my_free(ptr);
 
-        pthread_mutex_lock(&g_small_allocator.mutex);
+        my_lock();
 
         hash_remove(map, ptr);
         hash_insert(map, new_ptr, new_size);
 
-        pthread_mutex_unlock(&g_small_allocator.mutex);
+        my_unlock();
 
         return new_ptr;
     }
     else
     {
-        pthread_mutex_lock(&g_small_allocator.mutex);
+        my_lock();
 
         slot->size = new_size;
 
-        pthread_mutex_unlock(&g_small_allocator.mutex);
+        my_unlock();
 
         return ptr;
     }
@@ -156,11 +156,11 @@ void *my_realloc(void *ptr, size_t size)
     if (ptr == NULL)
         return my_malloc(size);
 
-    pthread_mutex_lock(&g_small_allocator.mutex);
+    my_lock();
 
     struct hash_slot *slot = hash_get_slot(&(g_small_allocator.map), ptr);
 
-    pthread_mutex_unlock(&g_small_allocator.mutex);
+    my_unlock();
 
     if (slot == NULL)
         return realloc_small_block(ptr, size);

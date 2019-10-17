@@ -1,7 +1,8 @@
-#include <math.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "util.h"
+#include "small_allocator.h"
 
 #define LAST_THREE_BYTE_NULL 0xFFFFFFFFFFFFF000
 
@@ -29,4 +30,21 @@ int my_log(int n)
 void* get_page_address(void *ptr)
 {
     return (void*)((unsigned long long)ptr & LAST_THREE_BYTE_NULL);
+}
+
+void my_lock(void)
+{
+    if (g_small_allocator.current == 0)
+    {
+        g_small_allocator.current = pthread_self();
+        pthread_mutex_lock(&g_small_allocator.mutex);
+    }
+    else if (g_small_allocator.current != pthread_self())
+        pthread_mutex_lock(&g_small_allocator.mutex);
+}
+
+void my_unlock(void)
+{
+    pthread_mutex_unlock(&g_small_allocator.mutex);
+    g_small_allocator.current = 0;
 }

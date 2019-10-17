@@ -9,7 +9,7 @@
 
 #define NB_GROUP_PAGE 7
 #define MAX_SIZE sysconf(_SC_PAGESIZE)
-#define NB_SLOTS 256
+#define NB_SLOTS 2048
 
 struct small_allocator g_small_allocator = {0};
 
@@ -92,7 +92,7 @@ static struct block* allocate_new_block(struct block *prev)
 
 void *allocate_item(struct small_allocator *small_allocator, size_t size)
 {
-    pthread_mutex_lock(&small_allocator->mutex);
+    my_lock();
 
     struct block *head = small_allocator->heads[my_log(size)];
     if (head == NULL) //first malloc call with this size
@@ -119,7 +119,7 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
     if (next != NULL)
         next->prev = head->beg_freelist;
 
-    pthread_mutex_unlock(&small_allocator->mutex);
+    my_unlock();
 
     return first;
 }
@@ -127,8 +127,9 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
 void init_small_allocator(void)
 {
     g_small_allocator.mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+    g_small_allocator.current = 0;
 
-    pthread_mutex_lock(&g_small_allocator.mutex);
+    my_lock();
 
     /*
     ** This if is to handle thread-safety
@@ -147,5 +148,5 @@ void init_small_allocator(void)
         }
     }
 
-    pthread_mutex_unlock(&g_small_allocator.mutex);
+    my_unlock();
 }
