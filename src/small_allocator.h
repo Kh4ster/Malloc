@@ -6,7 +6,7 @@
 
 #include "hash_map.h"
 
-#define NB_GROUP_PAGE 7
+#define NB_GROUP_PAGE 6
 
 extern struct small_allocator g_small_allocator;
 
@@ -17,7 +17,7 @@ struct small_allocator
     struct block *heads[NB_GROUP_PAGE];
     size_t max_sub_block_size;
     int page_size;
-    size_t size_item_per_block[7];
+    size_t size_item_per_block[NB_GROUP_PAGE];
     struct hash_map map;
     pthread_mutex_t mutex;
     //only used for malloc recursive call to malloc in the hashmap
@@ -38,8 +38,10 @@ struct block
 
 struct freelist_item
 {
+    long long first_shield;
     void *next;
     void *prev;
+    long long second_shield;
 };
 
 void *allocate_item(struct small_allocator *small_allocator, size_t size);

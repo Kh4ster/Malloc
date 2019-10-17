@@ -2,12 +2,13 @@
 
 #include "../src/small_allocator.h"
 
-#define NB_GROUP_PAGE 7
+#define NB_GROUP_PAGE 6
+#define FIRST_PAGE_SIZE 32
 
 Test(small_allocator, init_freelist)
 {
     init_small_allocator();
-    size_t size = 16;
+    size_t size = FIRST_PAGE_SIZE;
     for (size_t i = 0; i < NB_GROUP_PAGE; i++)
     {
         init_block_start(&g_small_allocator, size, &g_small_allocator.heads[i]);

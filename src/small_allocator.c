@@ -7,9 +7,10 @@
 #include "my_mmap.h"
 #include "util.h"
 
-#define NB_GROUP_PAGE 7
+#define NB_GROUP_PAGE 6
 #define MAX_SIZE sysconf(_SC_PAGESIZE)
 #define NB_SLOTS 2048
+#define FIRST_PAGE_SIZE 32
 
 struct small_allocator g_small_allocator = {0};
 
@@ -32,6 +33,8 @@ static void init_free_list(struct block *block,
     */
     long current_size = (block_size * 2) + sizeof(struct block);
     item->prev = block;
+    item->first_shield = 0;
+    item->second_shield = 0;
     if (current_size < MAX_SIZE)
         item->next = item + size_move;
     else
@@ -45,6 +48,8 @@ static void init_free_list(struct block *block,
     {
         current->prev = current - size_move;
         current->next = current + size_move;
+        current->first_shield = 0;
+        current->second_shield = 0;
         current = current->next;
         current_size += block_size;
     }
@@ -117,7 +122,7 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
     struct freelist_item *next = first->next;
     head->beg_freelist = next;
     if (next != NULL)
-        next->prev = head->beg_freelist;
+        next->prev = head;
 
     my_unlock();
 
@@ -140,8 +145,8 @@ void init_small_allocator(void)
         g_small_allocator.page_size = sysconf(_SC_PAGESIZE);
         hash_init(&(g_small_allocator.map), NB_SLOTS);
         g_small_allocator.max_sub_block_size = g_small_allocator.page_size / 4;
-        size_t size = 16;
-        for (size_t i = 0; i < 7; i++)
+        size_t size = FIRST_PAGE_SIZE;
+        for (size_t i = 0; i < NB_GROUP_PAGE; i++)
         {
             g_small_allocator.size_item_per_block[i] = size;
             size <<= 1;

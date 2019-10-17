@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <criterion/criterion.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "../src/malloc_api.h"
 #include "../src/small_allocator.h"
@@ -138,7 +139,7 @@ Test(free, fill_page_then_free_it)
     for(size_t i = 1; i < 300; ++i)
         str[i] = my_malloc(sizeof(char) * 16);
 
-    for(size_t i = 1; i < 7; ++i)
+    for(size_t i = 1; i < NB_GROUP_PAGE; ++i)
         cr_assert_null(g_small_allocator.heads[i]);
 
     cr_assert_not_null(g_small_allocator.heads[0]->next);
@@ -211,15 +212,16 @@ Test(realloc, stay_in_table)
     strcpy(str, "Hello world ! More more");
     cr_assert_eq(strcmp(str, "Hello world ! More more"), 0, "invalid string value");
 }
+
 Test(realloc, change_table)
 {
     char *str = my_malloc(sizeof(char) * 20);
     strcpy(str, "Hello world !");
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     str = my_realloc(str, 50);
-    struct freelist_item *first = g_small_allocator.heads[1]->beg_freelist;
+    struct freelist_item *first = g_small_allocator.heads[0]->beg_freelist;
     //suppose to free first so first free block should be right after
-    cr_assert_eq(first, g_small_allocator.heads[1] + 1);
+    cr_assert_eq(first, g_small_allocator.heads[0] + 1);
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     strcpy(str, "Hello world ! More more more more more more");
     cr_assert_eq(strcmp(str, "Hello world ! More more more more more more"), 0, "invalid string value");
@@ -271,17 +273,10 @@ Test(malloc_free, alot_of_big_block)
 /*
 int main()
 {
-    int **arr = my_calloc(200, sizeof(int*));
-    for (size_t i = 0; i < 200; i++)
-        arr[i] = my_calloc(800, sizeof(int));
-
-    for (size_t i = 0; i < 200; i++)
-    {
-        arr[i][27] = i;
-    }
-    for (size_t i = 0; i < 200; i++)
-    {
-        cr_assert_eq(i, arr[i][27]);
-    }
+    char *arr = my_malloc(32);
+    struct freelist_item *next = (struct freelist_item*)(arr + 32);
+    printf("%lld %p %p %lld\n", next->first_shield, next->prev, arr, next->second_shield);
+    *(arr + 32) = 5;
+    printf("%lld %p %p %lld\n", next->first_shield, next->prev, arr, next->second_shield);
 }
 */

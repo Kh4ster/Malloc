@@ -12,21 +12,25 @@
 
 int main(void)
 {
-    int **arr = my_calloc(800, sizeof(int*));
-    for (size_t i = 0; i < 800; i++)
-        arr[i] = my_calloc(800, sizeof(int));
+    int *a = my_malloc(sizeof(int));
+    *a = 3;
+    assert(3 == *a && "incorrect int value");
+    /*
+    int **arr = my_calloc(5000, sizeof(int*));
+    for (size_t i = 0; i < 5000; i++)
+        arr[i] = my_calloc(5000, sizeof(int));
 
-    for (size_t i = 0; i < 800; i++)
+    for (size_t i = 0; i < 5000; i++)
     {
         arr[i][27] = i;
     }
-    for (size_t i = 0; i < 800; i++)
+    for (int i = 0; i < 5000; i++)
     {
         assert(i == arr[i][27]);
     }
-    for (size_t i = 0; i < 800; i++)
+    for (size_t i = 0; i < 5000; i++)
     {
         my_free(arr[i]);
     }
-    my_free(arr);
+    my_free(arr);*/
 }
