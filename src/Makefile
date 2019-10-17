@@ -18,5 +18,8 @@ check:
 	./test_threads
 	rm test*
 
+malloc:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_malloc_api.c small_allocator.c util.c my_mmap.c malloc_api.c hash_map.c -o test_api -g
+
 mini:
 	$(CC) $(CPPFLAGS) mini.c util.c my_mmap.c small_allocator.c malloc_api.c hash_map.c -g -pthread

@@ -6,7 +6,7 @@
 #include "../src/malloc_api.h"
 #include "../src/small_allocator.h"
 #include "../src/hash_map.h"
-
+/*
 Test(malloc, basic_small_single_allocation)
 {
     int *a = my_malloc(sizeof(int));
@@ -211,7 +211,6 @@ Test(realloc, stay_in_table)
     strcpy(str, "Hello world ! More more");
     cr_assert_eq(strcmp(str, "Hello world ! More more"), 0, "invalid string value");
 }
-
 Test(realloc, change_table)
 {
     char *str = my_malloc(sizeof(char) * 20);
@@ -237,7 +236,7 @@ Test(realloc, big_same_addr)
     struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
     cr_assert_eq(slot->size, 3500);
 }
-
+*/
 Test(realloc, big_diff_addr)
 {
     char *a = my_malloc(3000);
@@ -252,3 +251,18 @@ Test(realloc, big_diff_addr)
     cr_assert_not_null(slot);
     cr_assert_eq(slot->size, 5000);
 }
+/*
+int main()
+{
+    char *a = my_malloc(3000);
+    a[2500] = 5;
+    char *b = my_realloc(a, 5000);
+    cr_assert_(a != b, "a should not be equal to b");
+    cr_assert_eq(b[2500], 5);
+    b[3500] = 3;
+    struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
+    cr_assert_null(slot);
+    slot = hash_get_slot(&g_small_allocator.map, b);
+    cr_assert_not_null(slot);
+    cr_assert_eq(slot->size, 5000);
+}*/
