@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <pthread.h>
 
 #include "small_allocator.h"
 #include "my_mmap.h"
@@ -87,6 +88,8 @@ static struct block* allocate_new_block(struct block *prev)
 
 void *allocate_item(struct small_allocator *small_allocator, size_t size)
 {
+    pthread_mutex_lock(&small_allocator->mutex);
+
     struct block *head = small_allocator->heads[my_log(size)];
     if (head == NULL) //first malloc call with this size
     {
@@ -111,18 +114,34 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
     head->beg_freelist = next;
     if (next != NULL)
         next->prev = head->beg_freelist;
+
+    pthread_mutex_unlock(&small_allocator->mutex);
+
     return first;
 }
 
 void init_small_allocator(void)
 {
-    hash_init(&(g_small_allocator.map), NB_SLOTS);
-    g_small_allocator.max_sub_block_size = sysconf(_SC_PAGESIZE) / 4;
-    g_small_allocator.page_size = sysconf(_SC_PAGESIZE);
-    size_t size = 16;
-    for (size_t i = 0; i < 7; i++)
+    g_small_allocator.mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+
+    pthread_mutex_lock(&g_small_allocator.mutex);
+
+    /*
+    ** This if is to handle thread-safety
+    ** I can't call the lock before because the mutex doesn't exist yet
+    */
+    if (g_small_allocator.page_size == 0)
     {
-        g_small_allocator.size_item_per_block[i] = size;
-        size <<= 1;
+        g_small_allocator.page_size = sysconf(_SC_PAGESIZE);
+        hash_init(&(g_small_allocator.map), NB_SLOTS);
+        g_small_allocator.max_sub_block_size = g_small_allocator.page_size / 4;
+        size_t size = 16;
+        for (size_t i = 0; i < 7; i++)
+        {
+            g_small_allocator.size_item_per_block[i] = size;
+            size <<= 1;
+        }
     }
+
+    pthread_mutex_unlock(&g_small_allocator.mutex);
 }

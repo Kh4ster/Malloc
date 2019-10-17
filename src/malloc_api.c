@@ -10,7 +10,13 @@
 static void* allocate_big_block(struct hash_map *map, size_t size)
 {
     void *ptr = my_mmap_size(size);
+
+    pthread_mutex_lock(&g_small_allocator.mutex);
+
     hash_insert(map, ptr, size);
+
+    pthread_mutex_unlock(&g_small_allocator.mutex);
+
     return ptr;
 }
 
@@ -38,6 +44,7 @@ static void free_big_block(struct hash_map *map, void *ptr, size_t size)
 static void free_small_block(void *ptr)
 {
     struct block *head = get_page_address(ptr);
+
     /*
     ** if block is higher than current top or no top
     ** should now become the first
@@ -69,18 +76,29 @@ void my_free(void *ptr)
 {
     if (ptr == NULL)
         return;
+
+    pthread_mutex_lock(&g_small_allocator.mutex);
+
     size_t size = hash_find(&(g_small_allocator.map), ptr);
     if (size == 0)
         free_small_block(ptr);
     else
         free_big_block(&(g_small_allocator.map), ptr, size);
+
+    pthread_mutex_unlock(&g_small_allocator.mutex);
 }
 
+/*
+** already thread-sage cause my_malloc is thread safe
+** i don't see a situation in which malloc would be called by 2 threads
+** and return the same adress
+*/
 void *my_calloc(size_t number, size_t size)
 {
     size_t a;
     if (__builtin_umull_overflow(number, size, &a))
         return NULL;
+
     void *ptr = my_malloc(number * size);
     memset(ptr, 0, number * size);
     return ptr;
@@ -99,17 +117,29 @@ void *realloc_big_block(struct hash_map *map,
         new_ptr = my_malloc(new_size);
         memcpy(new_ptr, ptr, slot->size);
         my_free(ptr);
+
+        pthread_mutex_lock(&g_small_allocator.mutex);
+
         hash_remove(map, ptr);
         hash_insert(map, new_ptr, new_size);
+
+        pthread_mutex_unlock(&g_small_allocator.mutex);
+
         return new_ptr;
     }
     else
     {
+        pthread_mutex_lock(&g_small_allocator.mutex);
+
         slot->size = new_size;
+
+        pthread_mutex_unlock(&g_small_allocator.mutex);
+
         return ptr;
     }
 }
 
+// already thread-safe cause my_malloc and my_free are
 static void* realloc_small_block(void *ptr, size_t new_size)
 {
     struct block *head = get_page_address(ptr);
@@ -125,7 +155,13 @@ void *my_realloc(void *ptr, size_t size)
 {
     if (ptr == NULL)
         return my_malloc(size);
+
+    pthread_mutex_lock(&g_small_allocator.mutex);
+
     struct hash_slot *slot = hash_get_slot(&(g_small_allocator.map), ptr);
+
+    pthread_mutex_unlock(&g_small_allocator.mutex);
+
     if (slot == NULL)
         return realloc_small_block(ptr, size);
     else

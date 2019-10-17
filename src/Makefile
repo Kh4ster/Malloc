@@ -11,10 +11,12 @@ check:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_util.c util.c my_mmap.c small_allocator.c hash_map.c malloc_api.c -o test_util
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_small_allocator.c util.c my_mmap.c small_allocator.c hash_map.c malloc_api.c -o test_allocator
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_malloc_api.c small_allocator.c util.c my_mmap.c malloc_api.c hash_map.c -o test_api
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_threads.c small_allocator.c util.c my_mmap.c malloc_api.c hash_map.c -o test_threads -pthread
 	./test_util
 	./test_allocator
 	./test_api
+	./test_threads
 	rm test*
 
 mini:
-	$(CC) $(CPPFLAGS) util.c my_mmap.c small_allocator.c malloc_api.c hash_map.c -g
+	$(CC) $(CPPFLAGS) mini.c util.c my_mmap.c small_allocator.c malloc_api.c hash_map.c -g -pthread

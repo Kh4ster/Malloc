@@ -2,6 +2,7 @@
 #define SMALL_ALLOCATOR_H
 
 #include <stddef.h>
+#include <pthread.h>
 
 #include "hash_map.h"
 
@@ -18,6 +19,7 @@ struct small_allocator
     int page_size;
     size_t size_item_per_block[7];
     struct hash_map map;
+    pthread_mutex_t mutex;
 };
 
 //Au début de ma page pour savoir où commence ma freelist et où sont les atr pag
