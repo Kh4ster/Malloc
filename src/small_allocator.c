@@ -106,7 +106,7 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
     if (head == NULL) //page full
         head = allocate_new_block(last);
 
-    struct freelist_item *first = head->beg_freelist; 
+    struct freelist_item *first = head->beg_freelist;
     struct freelist_item *next = first->next;
     head->beg_freelist = next;
     if (next != NULL)

@@ -14,7 +14,7 @@ static size_t hash(long long key, size_t table_size)
     {
         size_t new_r = ((key ^ 52) + imp[key % 5]) % table_size;
         if (new_r >= 23 && new_r <= 64)
-            return (((~new_r ^ 0xfaff0c45d))- imp[r % 5]) % table_size;
+            return (((~new_r ^ 0xfaff0c45d)) - imp[r % 5]) % table_size;
         return new_r;
     }
     return r;

@@ -1,5 +1,4 @@
 #include <unistd.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -10,7 +9,7 @@
 
 static void* allocate_big_block(struct hash_map *map, size_t size)
 {
-    void *ptr = my_mmap_size(size); 
+    void *ptr = my_mmap_size(size);
     hash_insert(map, ptr, size);
     return ptr;
 }
@@ -24,7 +23,7 @@ void *my_malloc(size_t size)
         if (size <= g_small_allocator.max_sub_block_size)
             return allocate_item(&g_small_allocator, size);
         else
-            return allocate_big_block(&(g_small_allocator.map),  size);
+            return allocate_big_block(&(g_small_allocator.map), size);
     }
     return NULL;
 }
@@ -97,15 +96,11 @@ void *realloc_big_block(struct hash_map *map,
     void *new_ptr;
     if (new_size / page_size > slot->size / page_size)
     {
-        new_ptr = my_mremap(ptr, slot->size, new_size);
-        if (new_ptr == ptr)
-            slot->size = new_size;
-        else
-        {
-            my_free(ptr);
-            hash_remove(map, ptr);
-            hash_insert(map, new_ptr, new_size);
-        }
+        new_ptr = my_malloc(new_size);
+        memcpy(new_ptr, ptr, slot->size);
+        my_free(ptr);
+        hash_remove(map, ptr);
+        hash_insert(map, new_ptr, new_size);
         return new_ptr;
     }
     else

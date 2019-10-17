@@ -2,6 +2,7 @@
 
 #include "../src/util.h"
 #include "../src/my_mmap.h"
+#include "../src/small_allocator.h"
 
 Test(log, correct_value)
 {
@@ -13,6 +14,7 @@ Test(log, correct_value)
 
 Test(get_page_address, correct_page_addr)
 {
+    init_small_allocator();
     void *ptr = my_mmap();
     char *b = ptr;
     char *a = b + 452;

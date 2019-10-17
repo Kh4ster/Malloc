@@ -14,6 +14,12 @@ Test(malloc, basic_small_single_allocation)
     cr_assert_eq(3, *a, "incorrect int value");
 }
 
+Test(malloc, 0)
+{
+    int *a = my_malloc(0);
+    cr_assert_null(a);
+}
+
 Test(malloc, basic_medium_single_allocation)
 {
     unsigned long long *a = my_malloc(sizeof(unsigned long long) * 3);

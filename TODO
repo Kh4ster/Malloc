@@ -1,10 +1,9 @@
 -> garbage data devant et derrière noeud pour protéger contre corruption
--> swaper page quand une pleine <- plutôt part de la fin
--> realloc smaller
--> agrandir taille hash_set ou resize si presque complet
+-> swaper page quand une pleine <- plutôt part de la fin ?
+-> realloc smaller ?
+-> agrandir taille hash_set ou resize si presque complet ?
 
 Question :
 
-Makefile sera réécrit ? Besoin de -lm
-si calloc overflow, return null ou error ?
-comment améliorer mon hashset
+allignement !
+comment améliorer mon hashset ?

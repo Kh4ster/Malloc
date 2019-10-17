@@ -13,4 +13,5 @@ int main()
     char *a = malloc(3000);
     a[2500] = 5;
     char *b = realloc(a, 5000);
+    printf("hello\n");
 }
