@@ -4,7 +4,7 @@
 
 #include "../src/malloc_api.h"
 
-#define NB_THREADS 277
+#define NB_THREADS 2
 
 void *classic(void *args)
 {
@@ -70,32 +70,41 @@ void *alot_of_small(void *args)
     char *a = args;
         a++;
 
-    char **arr = my_malloc(sizeof(char*) * 1000);
+    char *arr[1000];
     for (size_t i = 0; i < 1000; i++)
         arr[i] = my_malloc(sizeof(char) * (i + 1));
 
-    for (size_t i = 0; i < 100; i++)
-        my_free(arr[i]);
-    my_free(arr);
-
-    arr = my_malloc(sizeof(int*) * 100);
-    for (size_t i = 0; i < 100; i++)
-        arr[i] = my_malloc(sizeof(int) * (i + 1));
-
-    for (size_t i = 0; i < 100; i++)
+    for (size_t i = 0; i < 1000; i++)
     {
         for (size_t j = 0; j <= i; j++)
             arr[i][j] = i + j;
     }
-    for (size_t i = 0; i < 100; i++)
+
+    for (size_t i = 0; i < 1000; i++)
     {
         for (size_t j = 0; j <= i; j++)
-            cr_assert_eq(i + j, arr[i][j]);
+            cr_assert_eq((char)(i + j), arr[i][j]);
     }
 
-    for (size_t i = 0; i < 100; i++)
+    for (size_t i = 0; i < 1000; i++)
         my_free(arr[i]);
-    my_free(arr);
+
+    for (size_t i = 0; i < 1000; i++)
+        arr[i] = my_malloc(sizeof(int) * (i + 1));
+
+    for (size_t i = 0; i < 1000; i++)
+    {
+        for (size_t j = 0; j <= i; j++)
+            arr[i][j] = i + j;
+    }
+    for (size_t i = 0; i < 1000; i++)
+    {
+        for (size_t j = 0; j <= i; j++)
+            cr_assert_eq((char)(i + j), arr[i][j]);
+    }
+
+    for (size_t i = 0; i < 1000; i++)
+        my_free(arr[i]);
 
     return NULL;
 }

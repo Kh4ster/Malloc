@@ -23,3 +23,6 @@ malloc:
 
 mini:
 	$(CC) $(CPPFLAGS) mini.c util.c my_mmap.c small_allocator.c malloc_api.c hash_map.c -g -pthread
+
+thread:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_threads.c small_allocator.c util.c my_mmap.c malloc_api.c hash_map.c -o test_threads -pthread -g
