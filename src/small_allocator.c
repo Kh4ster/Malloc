@@ -86,12 +86,10 @@ struct block* init_block_start(struct small_allocator *small_allocator,
     return block;
 }
 
-static struct block* allocate_new_block(struct block *prev)
+static struct block* allocate_new_block(size_t sub_block_size)
 {
-    struct block *block = init_block(prev->sub_block_size,
-        (struct block**)(&prev->next));
-    block->prev = prev;
-    prev->next = block;
+    struct block *block = NULL;
+    init_block(sub_block_size, &block);
     return block;
 }
 
@@ -106,17 +104,16 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
                     size,
                     &(small_allocator->heads[my_log(size)]));
     }
-    struct block *last;
-    //go to first none-full page or end to allocate a new one
-    while (head != NULL && head->beg_freelist == NULL)
+    if (head->beg_freelist == NULL) //page full
     {
-        last = head;
-        struct block *next = head->next;
-        head = next;
+        struct block *new_head = allocate_new_block(head->sub_block_size);
+        small_allocator->heads[my_log(size)] = new_head;
+        new_head->prev = small_allocator->heads[my_log(size)];
+        new_head->next = head;
+        head->prev = new_head;
+        head->next = NULL;
+        head = new_head;
     }
-
-    if (head == NULL) //page full
-        head = allocate_new_block(last);
 
     struct freelist_item *first = head->beg_freelist;
     struct freelist_item *next = first->next;

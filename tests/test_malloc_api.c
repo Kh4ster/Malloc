@@ -128,7 +128,7 @@ Test(free, big_block, .signal = SIGSEGV)
 
 Test(free, fill_page_then_free_it)
 {
-    cr_assert_null(g_small_allocator.heads[0]);
+        cr_assert_null(g_small_allocator.heads[0]);
 
     char *str[300];
     str[0] = my_malloc(sizeof(char) * 16);
@@ -143,7 +143,12 @@ Test(free, fill_page_then_free_it)
         cr_assert_null(g_small_allocator.heads[i]);
 
     cr_assert_not_null(g_small_allocator.heads[0]->next);
-    cr_assert_null(g_small_allocator.heads[0]->beg_freelist);
+    cr_assert_not_null(g_small_allocator.heads[0]->prev);
+    struct block *next = g_small_allocator.heads[0]->next;
+    cr_assert_not_null(next->prev);
+    cr_assert_null(next->next);
+    cr_assert_eq(g_small_allocator.heads[0], next->prev);
+    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
 
     for(size_t i = 1; i < 300; ++i)
         str[i][0] = '5';
@@ -158,8 +163,6 @@ Test(free, fill_page_then_free_it)
 
     for(size_t i = 1; i < 300; ++i)
         str[i][0] = '5';
-
-    cr_assert_null(g_small_allocator.heads[0]->beg_freelist);
 }
 
 Test(calloc, overflow)
@@ -270,13 +273,92 @@ Test(malloc_free, alot_of_big_block)
     }
 }
 
+Test(perf, alot_of_small_block)
+{
+    char *arr[1000];
+    for (size_t i = 0; i < 1000; i++)
+        arr[i] = my_malloc(sizeof(char) * (i + 1));
+
+    for (size_t i = 0; i < 1000; i++)
+    {
+        for (size_t j = 0; j <= i; j++)
+            arr[i][j] = i + j;
+    }
+
+    for (size_t i = 0; i < 1000; i++)
+    {
+        for (size_t j = 0; j <= i; j++)
+            cr_assert_eq((char)(i + j), arr[i][j]);
+    }
+
+    for (size_t i = 0; i < 1000; i++)
+        my_free(arr[i]);
+
+    for (size_t i = 0; i < 1000; i++)
+        arr[i] = my_malloc(sizeof(int) * (i + 1));
+
+    for (size_t i = 0; i < 1000; i++)
+    {
+        for (size_t j = 0; j <= i; j++)
+            arr[i][j] = i + j;
+    }
+    for (size_t i = 0; i < 1000; i++)
+    {
+        for (size_t j = 0; j <= i; j++)
+            cr_assert_eq((char)(i + j), arr[i][j]);
+    }
+
+    for (size_t i = 0; i < 1000; i++)
+        my_free(arr[i]);
+}
+
+Test(perf, ALOT_same_small_block)
+{
+    char *arr[10000];
+    for (size_t i = 0; i < 15; i++)
+    {
+        for (size_t i = 0; i < 10000; i++)
+            arr[i] = my_malloc(sizeof(char));
+    }
+    //to compile
+    arr[0][0] = 3;
+}
 /*
 int main()
 {
-    char *arr = my_malloc(32);
-    struct freelist_item *next = (struct freelist_item*)(arr + 32);
-    printf("%lld %p %p %lld\n", next->first_shield, next->prev, arr, next->second_shield);
-    *(arr + 32) = 5;
-    printf("%lld %p %p %lld\n", next->first_shield, next->prev, arr, next->second_shield);
-}
-*/
+    cr_assert_null(g_small_allocator.heads[0]);
+
+    char *str[300];
+    str[0] = my_malloc(sizeof(char) * 16);
+
+    cr_assert_not_null(g_small_allocator.heads[0]);
+    cr_assert_null(g_small_allocator.heads[0]->next);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < NB_GROUP_PAGE; ++i)
+        cr_assert_null(g_small_allocator.heads[i]);
+
+    cr_assert_not_null(g_small_allocator.heads[0]->next);
+    cr_assert_not_null(g_small_allocator.heads[0]->prev);
+    struct block *next = g_small_allocator.heads[0]->next;
+    cr_assert_not_null(next->prev);
+    cr_assert_null(next->next);
+    cr_assert_eq(g_small_allocator.heads[0], next->prev);
+    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i][0] = '5';
+
+    for(size_t i = 1; i < 300; ++i)
+        my_free(str[i]);
+
+    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i] = my_malloc(sizeof(char) * 16);
+
+    for(size_t i = 1; i < 300; ++i)
+        str[i][0] = '5';
+}*/

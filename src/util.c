@@ -43,6 +43,6 @@ void my_lock(void)
 
 void my_unlock(void)
 {
-    pthread_mutex_unlock(&g_small_allocator.mutex);
     g_small_allocator.current = 0;
+    pthread_mutex_unlock(&g_small_allocator.mutex);
 }

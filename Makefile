@@ -1,7 +1,7 @@
 CC = gcc
 CPPFLAGS = -D_DEFAULT_SOURCE
 CFLAGS = -Wall -Wextra -Werror -std=c99 -fPIC -fno-builtin
-LDFLAGS = -shared
+LDFLAGS = -shared -lpthread
 VPATH = src
 
 TARGET_LIB = libmalloc.so
