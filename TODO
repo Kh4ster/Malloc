@@ -1,13 +1,11 @@
--> garbage data devant et derrière noeud pour protéger contre corruption
--> swaper page quand une pleine <- plutôt part de la fin ?
 -> realloc smaller ?
 -> agrandir taille hash_set ou resize si presque complet ?
 
 Question :
 
 allignement !
-try lock equivalent à ce que j'ai fait ?
 comment utiliser les speed.py, corruption proof ect ?
 peut mieux protéger contre data cooruption ?
 must be aligned on size_t ??
 pourquoi pas le droit d'utiliser wait et notify all ?
+-> pour perf mets vide devant mais du coup laisse autre derrière :/

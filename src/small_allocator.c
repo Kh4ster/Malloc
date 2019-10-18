@@ -6,10 +6,10 @@
 #include "small_allocator.h"
 #include "my_mmap.h"
 #include "util.h"
+#include "hash_map.h"
 
 #define NB_GROUP_PAGE 6
 #define MAX_SIZE sysconf(_SC_PAGESIZE)
-#define NB_SLOTS 2048
 #define FIRST_PAGE_SIZE 32
 
 struct small_allocator g_small_allocator = {0};
