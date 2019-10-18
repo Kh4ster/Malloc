@@ -51,6 +51,7 @@ void hash_insert(struct hash_map *set, void *value, size_t size)
 static int handle_start(struct hash_slot *s)
 {
     s->data = s->next->data;
+    s->size = s->next->size;
     struct hash_slot *next = s->next;
     s->next = s->next->next;
     next->data = NULL;

@@ -109,8 +109,7 @@ void *my_calloc(size_t number, size_t size)
     return ptr;
 }
 
-void *realloc_big_block(struct hash_map *map,
-                        void *ptr,
+void *realloc_big_block(void *ptr,
                         struct hash_slot *slot,
                         size_t new_size
 )
@@ -122,13 +121,6 @@ void *realloc_big_block(struct hash_map *map,
         new_ptr = my_malloc(new_size);
         memcpy(new_ptr, ptr, slot->size);
         my_free(ptr);
-
-        my_lock();
-
-        hash_remove(map, ptr);
-
-        my_unlock();
-
         return new_ptr;
     }
     else
@@ -169,8 +161,5 @@ void *my_realloc(void *ptr, size_t size)
     if (slot == NULL)
         return realloc_small_block(ptr, size);
     else
-        return realloc_big_block(&(g_small_allocator.map),
-                                    ptr,
-                                    slot,
-                                    size);
+        return realloc_big_block(ptr, slot, size);
 }

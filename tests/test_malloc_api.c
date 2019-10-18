@@ -7,7 +7,19 @@
 #include "../src/malloc_api.h"
 #include "../src/small_allocator.h"
 #include "../src/hash_map.h"
-/*
+
+Test(malloc, alignement)
+{
+    char *a[12];
+    char *null = NULL;
+    size_t b = 0;
+    for (size_t i = 1; i <= 2048; i <<= 1)
+    {
+        a[b] = my_malloc(i);
+        cr_assert_eq((a[b] - null) % 16, 0);
+        b++;
+    }
+}
 Test(malloc, basic_small_single_allocation)
 {
     int *a = my_malloc(sizeof(int));
@@ -241,7 +253,8 @@ Test(realloc, big_same_addr)
     struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
     cr_assert_eq(slot->size, 3500);
 }
-*/
+
+
 Test(realloc, big_diff_addr)
 {
     char *a = my_malloc(3000);
@@ -256,7 +269,7 @@ Test(realloc, big_diff_addr)
     cr_assert_not_null(slot);
     cr_assert_eq(slot->size, 5000, "%ld", slot->size);
 }
-/*
+
 Test(malloc_free, alot_of_big_block)
 {
     int **arr = my_calloc(200, sizeof(int*));
@@ -322,7 +335,7 @@ Test(perf, ALOT_same_small_block)
     }
     //to compile
     arr[0][0] = 3;
-}*/
+}
 /*
 int main()
 {
