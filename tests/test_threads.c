@@ -4,7 +4,7 @@
 
 #include "../src/malloc_api.h"
 
-#define NB_THREADS 2
+#define NB_THREADS 100
 
 void *classic(void *args)
 {

@@ -32,18 +32,10 @@ void* get_page_address(void *ptr)
 
 void my_lock(void)
 {
-    /*if (g_small_allocator.current == 0)
-    {
-        g_small_allocator.current = pthread_self();
-        pthread_mutex_lock(&g_small_allocator.mutex);
-    }
-    else if (g_small_allocator.current != pthread_self())
-        pthread_mutex_lock(&g_small_allocator.mutex);*/
-    //pthread_mutex_lock(&g_small_allocator.mutex);
+    pthread_mutex_lock(&g_small_allocator.mutex);
 }
 
 void my_unlock(void)
 {
-    //g_small_allocator.current = 0;
-    //pthread_mutex_unlock(&g_small_allocator.mutex);
+    pthread_mutex_unlock(&g_small_allocator.mutex);
 }

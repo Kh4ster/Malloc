@@ -7,7 +7,7 @@
 #include "../src/malloc_api.h"
 #include "../src/small_allocator.h"
 #include "../src/hash_map.h"
-
+/*
 Test(malloc, basic_small_single_allocation)
 {
     int *a = my_malloc(sizeof(int));
@@ -241,7 +241,7 @@ Test(realloc, big_same_addr)
     struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
     cr_assert_eq(slot->size, 3500);
 }
-
+*/
 Test(realloc, big_diff_addr)
 {
     char *a = my_malloc(3000);
@@ -254,9 +254,9 @@ Test(realloc, big_diff_addr)
     cr_assert_null(slot);
     slot = hash_get_slot(&g_small_allocator.map, b);
     cr_assert_not_null(slot);
-    cr_assert_eq(slot->size, 5000);
+    cr_assert_eq(slot->size, 5000, "%ld", slot->size);
 }
-
+/*
 Test(malloc_free, alot_of_big_block)
 {
     int **arr = my_calloc(200, sizeof(int*));
@@ -322,43 +322,20 @@ Test(perf, ALOT_same_small_block)
     }
     //to compile
     arr[0][0] = 3;
-}
+}*/
 /*
 int main()
 {
-    cr_assert_null(g_small_allocator.heads[0]);
-
-    char *str[300];
-    str[0] = my_malloc(sizeof(char) * 16);
-
-    cr_assert_not_null(g_small_allocator.heads[0]);
-    cr_assert_null(g_small_allocator.heads[0]->next);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i] = my_malloc(sizeof(char) * 16);
-
-    for(size_t i = 1; i < NB_GROUP_PAGE; ++i)
-        cr_assert_null(g_small_allocator.heads[i]);
-
-    cr_assert_not_null(g_small_allocator.heads[0]->next);
-    cr_assert_not_null(g_small_allocator.heads[0]->prev);
-    struct block *next = g_small_allocator.heads[0]->next;
-    cr_assert_not_null(next->prev);
-    cr_assert_null(next->next);
-    cr_assert_eq(g_small_allocator.heads[0], next->prev);
-    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i][0] = '5';
-
-    for(size_t i = 1; i < 300; ++i)
-        my_free(str[i]);
-
-    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i] = my_malloc(sizeof(char) * 16);
-
-    for(size_t i = 1; i < 300; ++i)
-        str[i][0] = '5';
-}*/
+    char *a = my_malloc(3000);
+    a[2500] = 5;
+    char *b = my_realloc(a, 5000);
+    cr_assert_(a != b, "a should not be equal to b");
+    cr_assert_eq(b[2500], 5);
+    b[3500] = 3;
+    struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
+    cr_assert_null(slot);
+    slot = hash_get_slot(&g_small_allocator.map, b);
+    cr_assert_not_null(slot);
+    cr_assert_eq(slot->size, 5000);
+}
+*/

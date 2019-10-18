@@ -128,12 +128,9 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
 
 void init_small_allocator(void)
 {
-    g_small_allocator.mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-    g_small_allocator.current = 0;
-
-    //pthread_mutexattr_init(&g_small_allocator.attr);
-    //pthread_mutexattr_settype(&g_small_allocator.attr, PTHREAD_MUTEX_RECURSIVE);
-    //pthread_mutex_init(&g_small_allocator.mutex, &g_small_allocator.attr);
+    pthread_mutexattr_init(&g_small_allocator.attr);
+    pthread_mutexattr_settype(&g_small_allocator.attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&g_small_allocator.mutex, &g_small_allocator.attr);
 
     my_lock();
 

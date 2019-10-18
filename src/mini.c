@@ -58,10 +58,15 @@ int main()
     for (size_t i = 0; i < NB_THREADS; ++i)
         pthread_join(thread_group[i], NULL);
 */
-    char *arr[10000];
-    for (size_t i = 0; i < 15; i++)
-    {
-        for (size_t i = 0; i < 10000; i++)
-            arr[i] = malloc(sizeof(char));
-    }
+    char *a = my_malloc(3000);
+    a[2500] = 5;
+    char *b = my_realloc(a, 5000);
+    assert(a != b && "a should not be equal to b");
+    assert(b[2500] == 5);
+    b[3500] = 3;
+    struct hash_slot *slot = hash_get_slot(&g_small_allocator.map, a);
+    assert(slot == NULL);
+    slot = hash_get_slot(&g_small_allocator.map, b);
+    assert(NULL != slot);
+    assert(slot->size == 5000);
 }

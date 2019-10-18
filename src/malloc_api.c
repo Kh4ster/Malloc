@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "small_allocator.h"
 #include "my_mmap.h"
@@ -125,7 +126,6 @@ void *realloc_big_block(struct hash_map *map,
         my_lock();
 
         hash_remove(map, ptr);
-        hash_insert(map, new_ptr, new_size);
 
         my_unlock();
 
