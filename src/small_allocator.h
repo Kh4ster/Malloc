@@ -22,6 +22,7 @@ struct small_allocator
     pthread_mutex_t mutex;
     //only used for malloc recursive call to malloc in the hashmap
     pthread_t current;
+    pthread_mutexattr_t attr;
 };
 
 //Au début de ma page pour savoir où commence ma freelist et où sont les atr pag

@@ -39,11 +39,11 @@ void my_lock(void)
     }
     else if (g_small_allocator.current != pthread_self())
         pthread_mutex_lock(&g_small_allocator.mutex);*/
-    pthread_mutex_lock(&g_small_allocator.mutex);
+    //pthread_mutex_lock(&g_small_allocator.mutex);
 }
 
 void my_unlock(void)
 {
     //g_small_allocator.current = 0;
-    pthread_mutex_unlock(&g_small_allocator.mutex);
+    //pthread_mutex_unlock(&g_small_allocator.mutex);
 }
