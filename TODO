@@ -9,3 +9,4 @@ peut mieux protéger contre data cooruption ?
 must be aligned on size_t ??
 pourquoi pas le droit d'utiliser wait et notify all ?
 -> pour perf mets vide devant mais du coup laisse autre derrière :/
+quand passe par libtrace -> seg fault ?
