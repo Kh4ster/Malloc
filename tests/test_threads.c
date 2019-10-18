@@ -64,7 +64,7 @@ Test(thread, malloc_free)
     for (size_t i = 0; i < NB_THREADS; ++i)
         pthread_join(thread_group[i], NULL);
 }
-/*
+
 void *alot_of_small(void *args)
 {
     char *a = args;
@@ -119,7 +119,7 @@ Test(thread, alot_of_small_allocation)
     for (size_t i = 0; i < NB_THREADS; ++i)
         pthread_join(thread_group[i], NULL);
 }
-
+/*
 int main()
 {
     pthread_t *thread_group = my_malloc(sizeof(pthread_t) * NB_THREADS);
