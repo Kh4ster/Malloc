@@ -3,10 +3,12 @@
 #include <criterion/criterion.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../src/malloc_api.h"
 #include "../src/small_allocator.h"
 #include "../src/hash_map.h"
+#include "../src/my_mmap.h"
 
 Test(malloc, alignement)
 {
@@ -117,13 +119,35 @@ Test(free, null_ptr)
     my_free(NULL);
 }
 
+Test(free, no_malloc_call_before)
+{
+    int *ptr = malloc(sizeof(int));
+    cr_assert_not_null(ptr);
+    my_free(ptr);
+}
+
+Test(realloc, no_malloc_call_before)
+{
+    int *ptr = malloc(sizeof(int));
+    cr_assert_not_null(ptr);
+    my_realloc(ptr, 5);
+}
+
 Test(free, basic_alloc_free)
 {
+    cr_assert_null(g_small_allocator.heads[1]);
     char *str = my_malloc(sizeof(char) * 20);
     strcpy(str, "Hello world !");
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
+    cr_assert_not_null(g_small_allocator.heads[1]);
+    struct block *head = g_small_allocator.heads[1];
+    cr_assert_eq(str, (long long *)head->beg_freelist - 4);
     my_free(str);
+    cr_assert_eq(g_small_allocator.heads[1] + 1, head->beg_freelist);
+    cr_assert_not(strcmp(str, "Hello world !") == 0);
     str = my_malloc(sizeof(char) * 20);
+    cr_assert_not_null(g_small_allocator.heads[1]);
+    cr_assert_eq(str, (long long *)head->beg_freelist - 4);
     strcpy(str, "Hello world !");
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     my_free(str);
@@ -201,7 +225,7 @@ Test(calloc, basic_allocation)
         cr_assert_eq(ptr[i], i, "not equal to value");
 }
 
-Test(realloc, null)
+Test(realloc, null_in)
 {
     int *ptr = my_realloc(NULL, 50 * sizeof(int));
     cr_assert_not_null(ptr);
@@ -269,6 +293,18 @@ Test(realloc, big_diff_addr)
     cr_assert_not_null(slot);
     cr_assert_eq(slot->size, 5000, "%ld", slot->size);
 }
+
+Test(realloc, O_size)
+{
+    void *ptr = my_realloc(NULL, 8);
+    cr_assert_not_null(g_small_allocator.heads[0]);
+    struct block *head = g_small_allocator.heads[0];
+    cr_assert_eq(ptr, (long long *)head->beg_freelist - 2);
+    ptr = my_realloc(ptr, 0);
+    cr_assert_null(ptr);
+    cr_assert_eq(g_small_allocator.heads[0] + 1, head->beg_freelist);
+}
+
 
 Test(malloc_free, alot_of_big_block)
 {

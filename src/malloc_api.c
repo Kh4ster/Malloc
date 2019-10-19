@@ -81,6 +81,9 @@ void my_free(void *ptr)
 
     my_lock();
 
+    if (g_small_allocator.page_size == 0)
+        init_small_allocator();
+
     size_t size = hash_find(&(g_small_allocator.map), ptr);
     if (size == 0)
         free_small_block(ptr);
@@ -154,8 +157,16 @@ void *my_realloc(void *ptr, size_t size)
 {
     if (ptr == NULL)
         return my_malloc(size);
+    else if (size == 0)
+    {
+        my_free(ptr);
+        return NULL;
+    }
 
     my_lock();
+
+    if (g_small_allocator.page_size == 0)
+        init_small_allocator();
 
     struct hash_slot *slot = hash_get_slot(&(g_small_allocator.map), ptr);
 
