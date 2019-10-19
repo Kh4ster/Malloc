@@ -37,7 +37,6 @@ void *my_malloc(size_t size)
     return NULL;
 }
 
-//not done, will use hashmap
 static void free_big_block(struct hash_map *map, void *ptr, size_t size)
 {
     hash_remove(map, ptr);
@@ -62,7 +61,7 @@ static void free_small_block(void *ptr)
         if (old_top != NULL)
             old_top->prev = current;
     }
-    else
+    else //if he is lower than the first free block
     {
         struct freelist_item *current = ptr;
         struct freelist_item *top = head->beg_freelist;

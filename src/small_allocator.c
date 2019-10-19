@@ -62,7 +62,7 @@ static struct block* init_block(size_t size_sub_block,
 )
 {
     *to_allocate = my_mmap();
-    if (*to_allocate == NULL)//no memory
+    if (*to_allocate == NULL) //no memory
         return NULL;
     struct block *block = *to_allocate;
     block->sub_block_size = size_sub_block;
@@ -105,17 +105,18 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
         if (head == NULL)
             return NULL;
     }
-    if (head->beg_freelist == NULL) //page full
+    else if (head->beg_freelist == NULL) //page full
     {
         struct block *new_head = allocate_new_block(head->sub_block_size);
         small_allocator->heads[my_log(size)] = new_head;
         new_head->prev = small_allocator->heads[my_log(size)];
-        new_head->next = head;
+        new_head->next = head; //put new page at begginning of the list
         head->prev = new_head;
         head->next = NULL;
         head = new_head;
     }
 
+    //update free list
     struct freelist_item *first = head->beg_freelist;
     struct freelist_item *next = first->next;
     head->beg_freelist = next;
