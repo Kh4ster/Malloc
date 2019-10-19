@@ -5,7 +5,7 @@
 #include "malloc_api.h"
 #include "my_mmap.h"
 
-//Justr trying to reduce same value appeareace
+//Just trying to reduce same value appeareace
 static size_t hash(long long key, size_t table_size)
 {
     static const int imp[5] = { 1, 3, 5, 7, 9 };
