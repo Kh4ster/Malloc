@@ -1,7 +1,7 @@
 CC = gcc
 CPPFLAGS = -D_DEFAULT_SOURCE
 CFLAGS = -Wall -Wextra -Werror -std=c99 -fPIC -fno-builtin
-LDFLAGS = -shared -lpthread
+LDFLAGS = -shared
 VPATH = src
 
 TARGET_LIB = libmalloc.so
@@ -14,6 +14,7 @@ all: $(TARGET_LIB)
 check:
 
 $(TARGET_LIB): CFLAGS += -pedantic -fvisibility=hidden
+$(TARGET_LIB): LDFLAGS += -lpthread
 $(TARGET_LIB): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 

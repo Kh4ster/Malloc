@@ -17,6 +17,7 @@ check:
 	./test_api
 	./test_threads
 	rm test*
+	./test_memory
 
 malloc:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lcriterion ../tests/test_malloc_api.c small_allocator.c util.c my_mmap.c malloc_api.c hash_map.c -o test_api -g -pthread
