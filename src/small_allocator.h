@@ -6,7 +6,7 @@
 
 #include "hash_map.h"
 
-#define NB_GROUP_PAGE 6
+#define NB_GROUP_PAGE 7
 
 extern struct small_allocator g_small_allocator;
 
@@ -39,10 +39,8 @@ struct block
 
 struct freelist_item
 {
-    long long first_shield;
     void *next;
     void *prev;
-    long long second_shield;
 };
 
 void *allocate_item(struct small_allocator *small_allocator, size_t size);

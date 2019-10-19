@@ -8,9 +8,8 @@
 #include "util.h"
 #include "hash_map.h"
 
-#define NB_GROUP_PAGE 6
 #define MAX_SIZE sysconf(_SC_PAGESIZE)
-#define FIRST_PAGE_SIZE 32
+#define FIRST_PAGE_SIZE 16
 
 struct small_allocator g_small_allocator = {0};
 
@@ -33,8 +32,6 @@ static void init_free_list(struct block *block,
     */
     long current_size = (block_size * 2) + sizeof(struct block);
     item->prev = block;
-    item->first_shield = 0;
-    item->second_shield = 0;
     if (current_size < MAX_SIZE)
         item->next = item + size_move;
     else
@@ -48,8 +45,6 @@ static void init_free_list(struct block *block,
     {
         current->prev = current - size_move;
         current->next = current + size_move;
-        current->first_shield = 0;
-        current->second_shield = 0;
         current = current->next;
         current_size += block_size;
     }

@@ -58,8 +58,6 @@ static void free_small_block(void *ptr)
         struct freelist_item *old_top = head->beg_freelist;
         current->prev = head;
         current->next = old_top;
-        current->first_shield = 0;
-        current->second_shield = 0;
         head->beg_freelist = current;
         if (old_top != NULL)
             old_top->prev = current;
@@ -68,8 +66,6 @@ static void free_small_block(void *ptr)
     {
         struct freelist_item *current = ptr;
         struct freelist_item *top = head->beg_freelist;
-        current->first_shield = 0;
-        current->second_shield = 0;
         current->prev = top;
         struct freelist_item *old_next = top->next;
         current->next = old_next;

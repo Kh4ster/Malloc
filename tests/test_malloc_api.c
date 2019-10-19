@@ -234,9 +234,9 @@ Test(realloc, change_table)
     strcpy(str, "Hello world !");
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     str = my_realloc(str, 50);
-    struct freelist_item *first = g_small_allocator.heads[0]->beg_freelist;
+    struct freelist_item *first = g_small_allocator.heads[1]->beg_freelist;
     //suppose to free first so first free block should be right after
-    cr_assert_eq(first, g_small_allocator.heads[0] + 1);
+    cr_assert_eq(first, g_small_allocator.heads[1] + 1);
     cr_assert_eq(strcmp(str, "Hello world !"), 0, "invalid string value");
     strcpy(str, "Hello world ! More more more more more more");
     cr_assert_eq(strcmp(str, "Hello world ! More more more more more more"), 0, "invalid string value");

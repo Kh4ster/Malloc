@@ -2,8 +2,8 @@
 
 #include "../src/small_allocator.h"
 
-#define NB_GROUP_PAGE 6
-#define FIRST_PAGE_SIZE 32
+#define NB_GROUP_PAGE 7
+#define FIRST_PAGE_SIZE 16
 
 Test(small_allocator, init_freelist)
 {

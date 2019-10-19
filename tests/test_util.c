@@ -4,7 +4,7 @@
 #include "../src/my_mmap.h"
 #include "../src/small_allocator.h"
 
-#define FIRST_PAGE_SIZE 32
+#define FIRST_PAGE_SIZE 16
 
 Test(log, correct_value)
 {

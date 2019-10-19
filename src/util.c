@@ -9,18 +9,20 @@
 int my_log(int n)
 {
     assert(n >= 0);
-    if (n <= 32)
+    if (n <= 16)
         return 0;
-    else if (n <= 64)
+    else if (n <= 32)
         return 1;
-    else if (n <= 128)
+    else if (n <= 64)
         return 2;
-    else if (n <= 256)
+    else if (n <= 128)
         return 3;
-    else if (n <= 512)
+    else if (n <= 256)
         return 4;
-    else if (n <= 1024)
+    else if (n <= 512)
         return 5;
+    else if (n <= 1024)
+        return 6;
     assert(0);
 }
 
