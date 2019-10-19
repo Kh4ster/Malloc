@@ -67,6 +67,8 @@ static struct block* init_block(size_t size_sub_block,
 )
 {
     *to_allocate = my_mmap();
+    if (*to_allocate == NULL)//no memory
+        return NULL;
     struct block *block = *to_allocate;
     block->sub_block_size = size_sub_block;
     block->next = NULL;
@@ -82,6 +84,8 @@ struct block* init_block_start(struct small_allocator *small_allocator,
 {
     size_t current_size = small_allocator->size_item_per_block[my_log(size)];
     struct block *block = init_block(current_size, to_allocate);
+    if (block == NULL)
+        return NULL;
     block->prev = small_allocator;
     return block;
 }
@@ -103,6 +107,8 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
         head = init_block_start(small_allocator,
                     size,
                     &(small_allocator->heads[my_log(size)]));
+        if (head == NULL)
+            return NULL;
     }
     if (head->beg_freelist == NULL) //page full
     {

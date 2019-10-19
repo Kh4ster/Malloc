@@ -11,6 +11,8 @@
 static void* allocate_big_block(struct hash_map *map, size_t size)
 {
     void *ptr = my_mmap_size(size);
+    if (ptr == NULL)
+        return NULL;
 
     my_lock();
 
@@ -105,6 +107,8 @@ void *my_calloc(size_t number, size_t size)
         return NULL;
 
     void *ptr = my_malloc(number * size);
+    if (ptr == NULL)
+        return NULL;
     memset(ptr, 0, number * size);
     return ptr;
 }
@@ -119,6 +123,8 @@ void *realloc_big_block(void *ptr,
     if (new_size / page_size > slot->size / page_size)
     {
         new_ptr = my_malloc(new_size);
+        if (new_ptr == NULL)
+            return NULL;
         memcpy(new_ptr, ptr, slot->size);
         my_free(ptr);
         return new_ptr;
@@ -142,6 +148,8 @@ static void* realloc_small_block(void *ptr, size_t new_size)
     if (head->sub_block_size >= new_size)
         return ptr;
     void *new_ptr = my_malloc(new_size);
+    if (new_ptr == NULL)
+        return NULL;
     memcpy(new_ptr, ptr, head->sub_block_size);
     my_free(ptr);
     return new_ptr;
