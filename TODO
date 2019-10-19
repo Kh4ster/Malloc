@@ -14,3 +14,8 @@ là le unlock unlock alors que pas fini non ?
 
 
 LD_PRELOAD=./lib ./memory_footprint 4562
+
+make debug
+gdb ./test
+set env
+run

@@ -88,8 +88,7 @@ struct block* init_block_start(struct small_allocator *small_allocator,
 static struct block* allocate_new_block(size_t sub_block_size)
 {
     struct block *block = NULL;
-    init_block(sub_block_size, &block);
-    return block;
+    return init_block(sub_block_size, &block);
 }
 
 void *allocate_item(struct small_allocator *small_allocator, size_t size)
@@ -108,6 +107,8 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
     else if (head->beg_freelist == NULL) //page full
     {
         struct block *new_head = allocate_new_block(head->sub_block_size);
+        if (new_head == NULL)
+            return NULL;
         small_allocator->heads[my_log(size)] = new_head;
         new_head->prev = small_allocator->heads[my_log(size)];
         new_head->next = head; //put new page at begginning of the list
