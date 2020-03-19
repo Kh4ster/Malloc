@@ -43,6 +43,31 @@ static void free_big_block(struct hash_map *map, void *ptr, size_t size)
     my_munmap(ptr, size);
 }
 
+static void free_empty_page(struct block *head)
+{
+    void *prev_ptr = head->prev;
+    if (prev_ptr != &g_small_allocator) // Block in the middle of the chain
+    {
+        struct block *prev = prev_ptr;
+        prev->next = head->next;
+        if (head->next != NULL)
+        {
+            struct block* next = head->next;
+            next->prev = prev;
+        }
+    }
+    else // It's the head of a bucket
+    {
+        g_small_allocator.heads[my_log(head->sub_block_size)] = head->next;
+        if (head->next != NULL)
+        {
+            struct block* next = head->next;
+            next->prev = &g_small_allocator;
+        }
+    }
+    my_munmap(head, g_small_allocator.page_size);
+}
+
 static void free_small_block(void *ptr)
 {
     struct block *head = get_page_address(ptr);
@@ -72,6 +97,9 @@ static void free_small_block(void *ptr)
         if (old_next != NULL)
             old_next->prev = current;
     }
+    --head->allocated_zones;
+    if (head->allocated_zones == 0) // Page totally empty
+        free_empty_page(head);
 }
 
 void my_free(void *ptr)

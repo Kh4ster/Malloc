@@ -68,6 +68,7 @@ static struct block* init_block(size_t size_sub_block,
     block->sub_block_size = size_sub_block;
     block->next = NULL;
     block->beg_freelist = block + 1;
+    block->allocated_zones = 0;
     init_free_list(block, block->beg_freelist, block->sub_block_size);
     return block;
 }
@@ -124,6 +125,7 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
     //update free list
     struct freelist_item *first = head->beg_freelist;
     struct freelist_item *next = first->next;
+    ++head->allocated_zones;
     head->beg_freelist = next;
     if (next != NULL)
         next->prev = head;
