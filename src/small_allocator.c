@@ -104,17 +104,21 @@ void *allocate_item(struct small_allocator *small_allocator, size_t size)
         if (head == NULL)
             return NULL;
     }
-    else if (head->beg_freelist == NULL) //page full
+    else if (head->beg_freelist == NULL) //first page full
     {
-        struct block *new_head = allocate_new_block(head->sub_block_size);
-        if (new_head == NULL)
-            return NULL;
-        small_allocator->heads[my_log(size)] = new_head;
-        new_head->prev = small_allocator->heads[my_log(size)];
-        new_head->next = head; //put new page at begginning of the list
-        head->prev = new_head;
-        head->next = NULL;
-        head = new_head;
+        // Find the first free page
+        while (head->next != NULL && head->beg_freelist == NULL)
+            head = head->next;
+        if (head->beg_freelist == NULL) // All pages are full
+        {
+            struct block *new_page = allocate_new_block(head->sub_block_size);
+            if (new_page == NULL)
+                return NULL;
+            new_page->prev = head;
+            new_page->next = NULL;
+            head->next = new_page;
+            head = new_page; // Set to head for further user
+        }
     }
 
     //update free list

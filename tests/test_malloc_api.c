@@ -10,6 +10,12 @@
 #include "../src/hash_map.h"
 #include "../src/my_mmap.h"
 
+void setup(void)
+{
+    for (int i = 0; i < NB_GROUP_PAGE; ++i)
+        g_small_allocator.heads[i] = NULL;
+}
+
 Test(malloc, alignement)
 {
     char *a[12];
@@ -133,7 +139,7 @@ Test(realloc, no_malloc_call_before)
     my_realloc(ptr, 5);
 }
 
-Test(free, basic_alloc_free)
+Test(free, basic_alloc_free, .init = setup)
 {
     cr_assert_null(g_small_allocator.heads[1]);
     char *str = my_malloc(sizeof(char) * 20);
@@ -162,9 +168,9 @@ Test(free, big_block, .signal = SIGSEGV)
     *ptr = 5;
 }
 
-Test(free, fill_page_then_free_it)
+Test(free, fill_page_then_free_it, .init = setup)
 {
-        cr_assert_null(g_small_allocator.heads[0]);
+    cr_assert_null(g_small_allocator.heads[0]);
 
     char *str[300];
     str[0] = my_malloc(sizeof(char) * 16);
@@ -184,7 +190,8 @@ Test(free, fill_page_then_free_it)
     cr_assert_not_null(next->prev);
     cr_assert_null(next->next);
     cr_assert_eq(g_small_allocator.heads[0], next->prev);
-    cr_assert_not_null(g_small_allocator.heads[0]->beg_freelist);
+    cr_assert_null(g_small_allocator.heads[0]->beg_freelist);
+    cr_assert_not_null(next->beg_freelist);
 
     for(size_t i = 1; i < 300; ++i)
         str[i][0] = '5';
@@ -320,6 +327,25 @@ Test(malloc_free, alot_of_big_block)
     {
         cr_assert_eq(i, arr[i][27]);
     }
+}
+
+Test(malloc_free, memory_reused)
+{
+    int *a = my_malloc(sizeof(int));
+    my_free(a);
+    int *b = my_malloc(sizeof(int));
+    cr_assert_eq(a, b);
+}
+
+Test(malloc_free, memory_reused_other_page)
+{
+    int **a = my_malloc(sizeof(int*) * 500);
+    for (int i = 0; i < 500; ++i)
+        a[i] = my_malloc(sizeof(int));
+    int *sssave = a[30];
+    my_free(a[30]);
+    int *b = my_malloc(sizeof(int));
+    assert(sssave == b);
 }
 
 Test(perf, alot_of_small_block)
