@@ -12,6 +12,7 @@ CALL_OBJS = call_trace.o
 all: $(TARGET_LIB)
 
 check:
+	$(CC) $(CPPFLAGS) $(CFLAGS) src/malloc.c src/my_mmap.c src/small_allocator.c src/util.c src/hash_map.c src/malloc_api.c tests/test_small_allocator.c -lpthread -lcriterion -g
 
 $(TARGET_LIB): CFLAGS += -pedantic -fvisibility=hidden
 $(TARGET_LIB): LDFLAGS += -lpthread

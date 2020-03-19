@@ -34,7 +34,8 @@ struct block
     //la partie donné dans laquelle on aura notre freelist
     void *beg_freelist;
     //conteur du nombre de zones allouées pour pouvoir unmap si libre
-    int allocated_zones;
+    long long allocated_zones;
+    long long padding; // To keep memory 16 bytes align
     //taile des sous block de la free_list en bytes
     size_t sub_block_size;
 };
